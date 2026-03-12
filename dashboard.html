@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>BarberFlow | Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
     <script>
         tailwind.config = { theme: { extend: { colors: { accent: '#D4AF37' } } } }
     </script>
@@ -13,7 +16,7 @@
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex">
 
-    <aside class="w-64 bg-gray-800 p-6 flex flex-col justify-between border-r border-gray-700">
+    <aside class="w-64 bg-gray-800 p-6 hidden md:flex flex-col justify-between border-r border-gray-700 h-screen sticky top-0">
         <div>
             <h1 id="shop-name-sidebar" class="text-2xl font-bold text-accent mb-10 italic">Carregando...</h1>
             <nav class="space-y-4">
@@ -28,33 +31,60 @@
     </aside>
 
     <main class="flex-1 p-10 overflow-y-auto">
-        <header class="mb-10">
-            <h2 class="text-3xl font-bold">Painel de Controle</h2>
-            <p class="text-gray-400">Visão geral da sua barbearia em tempo real.</p>
+        
+        <header class="mb-10 flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-bold">Painel de Controle</h2>
+                <p class="text-gray-400 text-sm md:text-base">Visão geral em tempo real.</p>
+            </div>
+            <button id="logout-btn-mobile" class="md:hidden bg-gray-800 p-3 rounded-full border border-gray-700 text-red-400">
+                <i data-lucide="log-out" class="w-5 h-5"></i>
+            </button>
         </header>
 
+        <div class="mobile-app-grid hidden md:hidden">
+            <a href="dashboard.html" class="mobile-app-btn" style="border-color: #D4AF37;">
+                <i data-lucide="layout-dashboard" class="nav-icon"></i>
+                <span>Painel</span>
+            </a>
+            <a href="agendamentos.html" class="mobile-app-btn">
+                <i data-lucide="calendar" class="nav-icon"></i>
+                <span>Agenda</span>
+            </a>
+            <a href="clientes.html" class="mobile-app-btn">
+                <i data-lucide="users" class="nav-icon"></i>
+                <span>Clientes</span>
+            </a>
+            <a href="barbeiros.html" class="mobile-app-btn">
+                <i data-lucide="scissors" class="nav-icon"></i>
+                <span>Equipe</span>
+            </a>
+        </div>
+
+        <p class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 px-1 md:hidden">Resumo</p>
+
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg flex flex-col items-center md:items-start">
                 <p class="text-gray-400 text-xs uppercase font-bold mb-2">Faturamento (7d)</p>
                 <h3 id="total-revenue" class="text-2xl font-bold text-green-500">R$ 0,00</h3>
             </div>
-            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg flex flex-col items-center md:items-start">
                 <p class="text-gray-400 text-xs uppercase font-bold mb-2">Total Clientes</p>
                 <h3 id="total-clients" class="text-2xl font-bold text-white">0</h3>
             </div>
-            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg flex flex-col items-center md:items-start">
                 <p class="text-gray-400 text-xs uppercase font-bold mb-2">Barbeiros</p>
                 <h3 id="total-barbers" class="text-2xl font-bold text-white">0</h3>
             </div>
-            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg flex flex-col items-center md:items-start">
                 <p class="text-gray-400 text-xs uppercase font-bold mb-2">Serviços Feitos</p>
                 <h3 id="total-completed" class="text-2xl font-bold text-accent">0</h3>
             </div>
         </div>
 
-        <div class="bg-gray-800 p-8 rounded-xl border border-gray-700 shadow-lg">
-            <h4 class="text-lg font-semibold mb-6">Evolução do Faturamento (Últimos 7 dias)</h4>
-            <div class="h-80">
+        <div class="bg-gray-800 p-4 md:p-8 rounded-xl border border-gray-700 shadow-lg">
+            <h4 class="text-sm md:text-lg font-semibold mb-6">Evolução do Faturamento</h4>
+            <div class="h-64 md:h-80">
                 <canvas id="revenueChart"></canvas>
             </div>
         </div>
@@ -62,6 +92,17 @@
 
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="dashboard.js"></script>
+    
+    <script>lucide.createIcons();</script>
+    <script>
+        // Faz o botão de sair mobile funcionar
+        setTimeout(() => {
+            const btnMobile = document.getElementById('logout-btn-mobile');
+            const btnPc = document.getElementById('logout-btn');
+            if(btnMobile && btnPc) {
+                btnMobile.addEventListener('click', () => btnPc.click());
+            }
+        }, 1000);
+    </script>
 </body>
-
 </html>

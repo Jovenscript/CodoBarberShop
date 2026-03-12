@@ -252,4 +252,5 @@ setInterval(() => {
 }, 60000); // 60000 milissegundos = 1 minuto
 
 // Dica: Para TESTAR AGORA sem esperar o meio-dia, descomente a linha abaixo e salve. Ele vai apitar e gerar a lista na hora que atualizar a página.
-// setTimeout(gerarConfirmacoesWhatsApp, 2000);
+ setTimeout(gerarConfirmacoesWhatsApp, 2000);
+

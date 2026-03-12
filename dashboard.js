@@ -2,109 +2,130 @@ import { auth, db } from "./firebase-config.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { collection, getDocs, getDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-let myChart;
+const totalRevenueEl = document.getElementById("total-revenue");
+const totalClientsEl = document.getElementById("total-clients");
+const totalBarbersEl = document.getElementById("total-barbers");
+const totalCompletedEl = document.getElementById("total-completed");
+
+let revenueChartInstance = null;
+let currentShopId = null; // Guardando o ID da loja para usar no sininho
 
 onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        // Inicia o carregamento dos dados da barbearia
-        await loadShopName(user.uid);
-        await loadVisionaryDashboard(user.uid);
-    } else {
+    if (!user) {
         window.location.href = "login.html";
+        return;
     }
+    const userId = user.uid;
+    currentShopId = userId; // Salva o ID globalmente
+
+    loadShopName(userId);
+    loadDashboardData(userId);
+    
+    // Inicia o sistema de notificações após carregar os dados
+    iniciarSistemaNotificacoes();
 });
 
-// Busca o nome da barbearia no Firebase e atualiza o menu lateral
 async function loadShopName(uid) {
     try {
         const shopSnap = await getDoc(doc(db, "barbershops", uid));
         const shopNameElement = document.getElementById("shop-name-sidebar");
-        
-        if (shopSnap.exists() && shopSnap.data().name) {
-            shopNameElement.innerText = shopSnap.data().name;
-        } else {
-            shopNameElement.innerText = "BarberFlow"; // Fallback caso não tenha nome cadastrado
+        if (shopNameElement) {
+            shopNameElement.innerText = shopSnap.exists() && shopSnap.data().name ? shopSnap.data().name : "BarberFlow";
         }
     } catch (error) {
-        console.error("Erro ao buscar nome da barbearia:", error);
-        document.getElementById("shop-name-sidebar").innerText = "BarberFlow";
+        console.error("Erro ao buscar nome:", error);
     }
 }
 
-async function loadVisionaryDashboard(uid) {
-    // 1. Criar a lista dos últimos 7 dias para o gráfico (Eixo X)
-    const last7Days = [];
-    for (let i = 6; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        last7Days.push(d.toISOString().split('T')[0]);
-    }
-
+async function loadDashboardData(uid) {
     try {
-        // 2. Busca Agendamentos Concluídos (Independente da data para o Total Revenue)
-        const qAppo = query(
-            collection(db, "barbershops", uid, "appointments"),
-            where("status", "==", "concluido")
-        );
+        const clientsSnap = await getDocs(collection(db, "barbershops", uid, "clients"));
+        totalClientsEl.innerText = clientsSnap.size;
 
-        // 3. Busca Clientes e Barbeiros simultaneamente para performance
-        const [appoSnap, clientsSnap, barbersSnap] = await Promise.all([
-            getDocs(qAppo),
-            getDocs(collection(db, "barbershops", uid, "clients")),
-            getDocs(collection(db, "barbershops", uid, "barbers"))
-        ]);
+        const barbersSnap = await getDocs(collection(db, "barbershops", uid, "barbers"));
+        totalBarbersEl.innerText = barbersSnap.size;
 
-        let totalRevenue = 0;
-        const dailyData = {};
-        last7Days.forEach(day => dailyData[day] = 0);
+        const today = new Date();
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 6); 
 
-        // 4. Lógica de Soma: O "Cérebro" do Financeiro
-        appoSnap.forEach(doc => {
+        const appointmentsSnap = await getDocs(collection(db, "barbershops", uid, "appointments"));
+        
+        let totalRev = 0;
+        let completedCount = 0;
+        let revenueByDay = {
+            [formatDate(sevenDaysAgo)]: 0,
+            [formatDate(addDays(sevenDaysAgo, 1))]: 0,
+            [formatDate(addDays(sevenDaysAgo, 2))]: 0,
+            [formatDate(addDays(sevenDaysAgo, 3))]: 0,
+            [formatDate(addDays(sevenDaysAgo, 4))]: 0,
+            [formatDate(addDays(sevenDaysAgo, 5))]: 0,
+            [formatDate(today)]: 0
+        };
+
+        appointmentsSnap.forEach((doc) => {
             const data = doc.data();
-            // Garante que o preço seja tratado como número
-            const valor = parseFloat(data.price) || 0;
-            
-            // Soma no faturamento total acumulado (Esse valor aparece no card lá em cima)
-            totalRevenue += valor;
-            
-            // Se o agendamento for de um dos últimos 7 dias, soma no gráfico
-            if (dailyData[data.date] !== undefined) {
-                dailyData[data.date] += valor;
+            if (data.status === "concluido" && data.date) {
+                completedCount++;
+                if (revenueByDay[data.date] !== undefined) {
+                    revenueByDay[data.date] += Number(data.price);
+                    totalRev += Number(data.price);
+                }
             }
         });
 
-        // 5. Atualiza os Cards na Interface
-        document.getElementById("total-revenue").innerText = `R$ ${totalRevenue.toFixed(2)}`;
-        document.getElementById("total-clients").innerText = clientsSnap.size;
-        document.getElementById("total-barbers").innerText = barbersSnap.size;
-        document.getElementById("total-completed").innerText = appoSnap.size;
+        totalCompletedEl.innerText = completedCount;
+        totalRevenueEl.innerText = `R$ ${totalRev.toFixed(2)}`;
 
-        // 6. Renderiza o Gráfico com as cores BarberFlow
-        renderChart(Object.keys(dailyData), Object.values(dailyData));
+        const labels = Object.keys(revenueByDay).map(d => d.split('-').reverse().slice(0, 2).join('/')); 
+        const values = Object.values(revenueByDay);
+
+        renderChart(labels, values);
 
     } catch (error) {
-        console.error("Erro na automação do Dashboard:", error);
+        console.error("Erro ao carregar dashboard:", error);
     }
+}
+
+function formatDate(date) {
+    const d = new Date(date);
+    let month = '' + (d.getMonth() + 1);
+    let day = '' + d.getDate();
+    const year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
+function addDays(date, days) {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
 }
 
 function renderChart(labels, data) {
     const ctx = document.getElementById('revenueChart').getContext('2d');
     
-    if (myChart) myChart.destroy();
+    if (revenueChartInstance) {
+        revenueChartInstance.destroy();
+    }
 
-    myChart = new Chart(ctx, {
+    revenueChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels.map(l => l.split('-').reverse().slice(0,2).join('/')), 
+            labels: labels,
             datasets: [{
-                label: 'Faturamento R$',
+                label: 'Faturamento Diário (R$)',
                 data: data,
-                borderColor: '#D4AF37', 
+                borderColor: '#D4AF37',
                 backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                borderWidth: 2,
+                pointBackgroundColor: '#D4AF37',
+                pointRadius: 4,
                 fill: true,
-                tension: 0.4,
-                borderWidth: 3,
-                pointBackgroundColor: '#D4AF37'
+                tension: 0.4
             }]
         },
         options: {
@@ -117,140 +138,118 @@ function renderChart(labels, data) {
                 y: {
                     beginAtZero: true,
                     grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                    ticks: { color: '#9ca3af' }
+                    ticks: { color: '#9CA3AF' }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#9ca3af' }
+                    ticks: { color: '#9CA3AF' }
                 }
             }
         }
     });
 }
 
-// Botão de Logout
 const logoutBtn = document.getElementById("logout-btn");
-
 if (logoutBtn) logoutBtn.addEventListener("click", () => signOut(auth));
+
 
 // ==========================================
 // SISTEMA DE NOTIFICAÇÕES (MEIO-DIA) E WHATSAPP
 // ==========================================
 
-const notificationBtn = document.getElementById("notification-btn");
-const notificationPanel = document.getElementById("notification-panel");
-const notificationBadge = document.getElementById("notification-badge");
-const whatsappList = document.getElementById("whatsapp-list");
+function iniciarSistemaNotificacoes() {
+    const notificationBtn = document.getElementById("notification-btn");
+    const notificationPanel = document.getElementById("notification-panel");
+    const notificationBadge = document.getElementById("notification-badge");
+    const whatsappList = document.getElementById("whatsapp-list");
 
-// O Som de notificação (Um "Ding" suave)
-const somNotificacao = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    if(!notificationBtn) return; // Se não estiver na página certa, não faz nada
 
-// Mostra/Esconde o painel ao clicar no sino
-notificationBtn.addEventListener("click", () => {
-    notificationPanel.classList.toggle("hidden");
-    notificationBadge.classList.add("hidden"); // Esconde a bolinha vermelha ao abrir
-});
+    // O Som de notificação
+    const somNotificacao = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
 
-// Função que busca os clientes de amanhã e gera os links
-async function gerarConfirmacoesWhatsApp() {
-    try {
-        // Pega a data de amanhã no formato YYYY-MM-DD
-        const amanha = new Date();
-        amanha.setDate(amanha.getDate() + 1);
-        const dataAmanhaStr = amanha.toISOString().split('T')[0];
+    // Mostra/Esconde o painel ao clicar no sino
+    notificationBtn.addEventListener("click", () => {
+        notificationPanel.classList.toggle("hidden");
+        notificationBadge.classList.add("hidden"); 
+    });
 
-        // Se você tiver múltiplos barbeiros/lojas, ajuste essa query para a sua estrutura do Firebase
-        // Aqui estou supondo que os agendamentos estão na raiz ou dentro da sua barbershop
-        const { collection, query, where, getDocs, orderBy } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-        
-        // ** ATENÇÃO: Ajuste "currentShopId" conforme o seu código no topo do dashboard.js **
-        const q = query(
-            collection(db, "barbershops", currentShopId, "appointments"), 
-            where("date", "==", dataAmanhaStr),
-            where("status", "!=", "concluido") // Não puxa os concluídos/cancelados
-        );
+    async function gerarConfirmacoesWhatsApp() {
+        try {
+            const amanha = new Date();
+            amanha.setDate(amanha.getDate() + 1);
+            const dataAmanhaStr = amanha.toISOString().split('T')[0];
 
-        const snapshot = await getDocs(q);
-        
-        whatsappList.innerHTML = "";
+            const q = query(
+                collection(db, "barbershops", currentShopId, "appointments"), 
+                where("date", "==", dataAmanhaStr),
+                where("status", "!=", "concluido") 
+            );
 
-        if (snapshot.empty) {
-            whatsappList.innerHTML = `<p class="text-sm text-gray-500 italic">Nenhum agendamento para amanhã.</p>`;
-            return;
-        }
+            const snapshot = await getDocs(q);
+            whatsappList.innerHTML = "";
 
-        let temCliente = false;
+            if (snapshot.empty) {
+                whatsappList.innerHTML = `<p class="text-sm text-gray-500 italic px-2">Nenhum agendamento para amanhã.</p>`;
+                return;
+            }
 
-        snapshot.forEach((doc) => {
-            const appo = doc.data();
-            // Precisamos que o agendamento tenha salvo o telefone do cliente! 
-            // Caso não tenha salvo direto no agendamento, você teria que fazer outro getDoc na coleção de clientes.
-            // Para simplificar, supondo que tenha appo.clientPhone (se não tiver, coloque "Sem telefone").
-            const telefone = appo.clientPhone || "5500000000000"; 
-            const nomeCliente = appo.clientName || "Cliente";
-            const horario = appo.time;
-            const servico = appo.service;
+            let temCliente = false;
 
-            // Formata o número (Tira espaços, traços e parênteses)
-            const numeroLimpo = telefone.replace(/\D/g, '');
-            // Verifica se tem o 55 do Brasil, se não, adiciona
-            const numeroZap = numeroLimpo.startsWith("55") ? numeroLimpo : "55" + numeroLimpo;
+            snapshot.forEach((doc) => {
+                const appo = doc.data();
+                const telefone = appo.clientPhone || "5500000000000"; 
+                const nomeCliente = appo.clientName || "Cliente";
+                const horario = appo.time;
+                const servico = appo.service;
 
-            // A Mensagem Pronta
-            const textoMsg = `Olá, ${nomeCliente}! Tudo bem? Passando aqui para confirmar o seu horário de amanhã às ${horario} para o serviço de ${servico}. Podemos confirmar? ✂️`;
-            const linkZap = `https://wa.me/${numeroZap}?text=${encodeURIComponent(textoMsg)}`;
+                const numeroLimpo = telefone.replace(/\D/g, '');
+                const numeroZap = numeroLimpo.startsWith("55") ? numeroLimpo : "55" + numeroLimpo;
 
-            temCliente = true;
+                const textoMsg = `Olá, ${nomeCliente}! Tudo bem? Passando aqui para confirmar o seu horário de amanhã às ${horario} para o serviço de ${servico}. Podemos confirmar? ✂️`;
+                const linkZap = `https://wa.me/${numeroZap}?text=${encodeURIComponent(textoMsg)}`;
 
-            whatsappList.innerHTML += `
-                <div class="bg-gray-700 p-3 rounded-lg flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-white text-sm">${nomeCliente}</p>
-                        <p class="text-xs text-gray-400">Amanhã, ${horario}</p>
+                temCliente = true;
+
+                whatsappList.innerHTML += `
+                    <div class="bg-gray-700 p-3 rounded-lg flex justify-between items-center hover:bg-gray-600 transition">
+                        <div>
+                            <p class="font-bold text-white text-sm">${nomeCliente}</p>
+                            <p class="text-[10px] text-accent uppercase font-bold tracking-widest mt-1">Amanhã, ${horario}</p>
+                        </div>
+                        <a href="${linkZap}" target="_blank" class="bg-[#25D366] hover:bg-[#1ebd5b] text-white p-2 rounded-full transition shadow-lg shadow-green-900/50" title="Enviar WhatsApp">
+                            <i data-lucide="phone" class="w-4 h-4"></i>
+                        </a>
                     </div>
-                    <a href="${linkZap}" target="_blank" class="bg-green-600 hover:bg-green-500 text-white p-2 rounded-full transition" title="Enviar WhatsApp">
-                        <i data-lucide="phone" class="w-4 h-4"></i>
-                    </a>
-                </div>
-            `;
-        });
+                `;
+            });
 
-        // Recria os ícones Lucide recém injetados
-        if(window.lucide) window.lucide.createIcons();
+            if(window.lucide) window.lucide.createIcons();
 
-        // Se encontrou clientes, toca o som e mostra a bolinha
-        if (temCliente) {
-            somNotificacao.play().catch(e => console.log("O navegador bloqueou o som automático. Clique na tela antes."));
-            notificationBadge.classList.remove("hidden");
-            // Se o painel estiver fechado, dá um aviso
-            if(notificationPanel.classList.contains("hidden")){
-                // Você pode usar um alert ou só deixar a bolinha lá
+            if (temCliente) {
+                somNotificacao.play().catch(e => console.log("Som bloqueado pelo navegador."));
+                notificationBadge.classList.remove("hidden");
+            }
+
+        } catch (error) {
+            console.error("Erro ao puxar lista do zap:", error);
+        }
+    }
+
+    // --- TESTE RÁPIDO: Tira as duas barras (//) do comando abaixo para testar AGORA:
+    // setTimeout(gerarConfirmacoesWhatsApp, 2000);
+
+    // O Verificador do Relógio (Roda a cada 1 minuto)
+    setInterval(() => {
+        const agora = new Date();
+        if (agora.getHours() === 12 && agora.getMinutes() === 0) {
+            const ultimaNotificacao = localStorage.getItem('ultimaNotificacaoZap');
+            const hojeStr = agora.toDateString();
+
+            if (ultimaNotificacao !== hojeStr) {
+                gerarConfirmacoesWhatsApp();
+                localStorage.setItem('ultimaNotificacaoZap', hojeStr);
             }
         }
-
-    } catch (error) {
-        console.error("Erro ao puxar lista do zap:", error);
-    }
+    }, 60000);
 }
-
-// O Verificador do Relógio (Roda a cada 1 minuto)
-setInterval(() => {
-    const agora = new Date();
-    
-    // Verifica se é 12:00 (Meio-dia)
-    if (agora.getHours() === 12 && agora.getMinutes() === 0) {
-        
-        // Evita que apite várias vezes no mesmo dia usando o localStorage do navegador
-        const ultimaNotificacao = localStorage.getItem('ultimaNotificacaoZap');
-        const hojeStr = agora.toDateString();
-
-        if (ultimaNotificacao !== hojeStr) {
-            gerarConfirmacoesWhatsApp();
-            localStorage.setItem('ultimaNotificacaoZap', hojeStr);
-        }
-    }
-}, 60000); // 60000 milissegundos = 1 minuto
-
-// Dica: Para TESTAR AGORA sem esperar o meio-dia, descomente a linha abaixo e salve. Ele vai apitar e gerar a lista na hora que atualizar a página.
- setTimeout(gerarConfirmacoesWhatsApp, 2000);
-

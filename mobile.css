@@ -1,6 +1,5 @@
 /* mobile.css - Ajustes Finos para Celular */
 
-/* Esconde os ícones no PC (aparecem apenas no celular) */
 .nav-icon {
     display: none;
 }
@@ -11,30 +10,29 @@
         width: 100vw;
     }
 
-    /* Esconde o menu lateral do PC */
     aside {
         display: none !important;
     }
 
-    /* Reconfigura a área principal para usar a tela toda */
+    /* Dá um respiro gigante no fundo para o menu não tampar o conteúdo */
     main {
-        padding: 20px !important;
+        padding: 20px 20px 100px 20px !important; 
         width: 100% !important;
+        height: 100vh;
+        overflow-y: auto;
     }
 
-    /* O SEGREDO DA GRADE: Transforma o header da página num App */
     main > header {
-        background-color: #111827; /* bg-gray-900 */
+        background-color: #111827;
         padding: 20px;
         border-radius: 0 0 20px 20px;
-        margin: -20px -20px 20px -20px; /* Estica até as bordas */
+        margin: -20px -20px 20px -20px;
         border-bottom: 1px solid #374151;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
-    /* A GRADE DE BOTÕES (Injetamos isso no HTML logo abaixo do Header) */
     .mobile-app-grid {
         display: grid !important;
         grid-template-columns: repeat(2, 1fr);
@@ -47,19 +45,14 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        background-color: #1f2937; /* bg-gray-800 */
-        border: 1px solid #374151; /* border-gray-700 */
+        background-color: #1f2937;
+        border: 1px solid #374151;
         border-radius: 16px;
-        aspect-ratio: 1 / 1; /* Força ser um quadrado perfeito */
+        aspect-ratio: 1 / 1;
         color: white;
         text-decoration: none;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         transition: all 0.2s;
-    }
-
-    .mobile-app-btn:active {
-        border-color: #D4AF37;
-        background-color: rgba(212, 175, 55, 0.1);
     }
 
     .mobile-app-btn span {
@@ -69,15 +62,13 @@
         margin-top: 10px;
     }
 
-    /* Exibe os ícones apenas na grade do mobile */
     .mobile-app-btn .nav-icon {
         display: block;
         width: 35px;
         height: 35px;
-        color: #D4AF37; /* Dourado */
+        color: #D4AF37;
     }
 
-    /* Ajustes para os quadros de faturamento */
     .grid-cols-1.md\:grid-cols-4 {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 10px !important;
@@ -86,13 +77,5 @@
     .grid-cols-1.md\:grid-cols-4 > div {
         padding: 15px !important;
         text-align: center;
-    }
-    
-    .grid-cols-1.md\:grid-cols-4 > div p {
-        font-size: 9px !important;
-    }
-    
-    .grid-cols-1.md\:grid-cols-4 > div h3 {
-        font-size: 18px !important;
     }
 }

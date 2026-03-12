@@ -12,6 +12,19 @@
         tailwind.config = { theme: { extend: { colors: { accent: '#D4AF37' } } } }
     </script>
     <link rel="stylesheet" href="mobile.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#111827">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('PWA: Service Worker registrado!'))
+                    .catch(err => console.log('PWA: Erro no Service Worker', err));
+            });
+        }
+    </script>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex relative">
 
@@ -92,3 +105,4 @@
     </script>
 </body>
 </html>
+

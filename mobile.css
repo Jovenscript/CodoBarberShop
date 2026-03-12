@@ -1,0 +1,68 @@
+/* mobile.css - Ajustes Finos para Celular */
+
+@media (max-width: 768px) {
+    /* Ajusta o corpo para não sobrar espaço nas laterais */
+    body {
+        overflow-x: hidden;
+        width: 100vw;
+    }
+
+    /* Transforma a Sidebar (lateral) em uma barra fixa embaixo ou no topo */
+    aside {
+        width: 100% !important;
+        height: auto !important;
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        z-index: 999;
+        flex-direction: row !important;
+        padding: 10px !important;
+        border-top: 1px solid #374151;
+        border-right: none !important;
+        background: rgba(31, 41, 55, 0.95) !important;
+        backdrop-filter: blur(10px);
+    }
+
+    aside h1, aside p, #logout-btn {
+        display: none !important; /* Esconde o logo e o sair no mobile para dar espaço */
+    }
+
+    aside nav {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-around !important;
+        width: 100% !important;
+        margin-top: 0 !important;
+    }
+
+    aside nav a {
+        font-size: 10px !important;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    /* Ajusta o conteúdo principal para não ficar escondido atrás da barra */
+    main {
+        padding-bottom: 80px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    /* Faz os cartões de data do carrossel ficarem maiores e mais fáceis de clicar */
+    .date-card {
+        width: 70px !important;
+        padding: 10px 5px !important;
+    }
+
+    /* Ajusta os cards de agendamento para virarem coluna */
+    #day-appointments-list div {
+        flex-direction: column !important;
+        text-align: center;
+        gap: 15px;
+    }
+
+    /* Botão de finalizar agendamento em largura total */
+    .done-btn {
+        width: 100% !important;
+    }
+}

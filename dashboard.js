@@ -237,7 +237,7 @@ function iniciarSistemaNotificacoes() {
     }
 
     // --- TESTE RÁPIDO: Tira as duas barras (//) do comando abaixo para testar AGORA:
-    // setTimeout(gerarConfirmacoesWhatsApp, 2000);
+    setTimeout(gerarConfirmacoesWhatsApp, 2000);
 
     // O Verificador do Relógio (Roda a cada 1 minuto)
     setInterval(() => {
@@ -253,3 +253,4 @@ function iniciarSistemaNotificacoes() {
         }
     }, 60000);
 }
+

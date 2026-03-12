@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Reserva Exclusive | BarberFlow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;600;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: { colors: { accent: '#D4AF37' } } } }
+    </script>
+    <style>
+        :root { --bg-img: url(''); }
+        body { background-color: #050505; margin: 0; overflow-x: hidden; font-family: 'Inter', sans-serif; }
+        .parallax-bg {
+            position: fixed; top: -5%; left: -5%; width: 110%; height: 110%;
+            background-image: var(--bg-img); background-size: cover; background-position: center;
+            filter: brightness(0.2) blur(2px); z-index: -1; transition: transform 0.2s ease-out;
+        }
+        .glass-ui {
+            background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(25px);
+            border: 1px solid rgba(212, 175, 55, 0.15); position: relative; overflow: hidden;
+        }
+        .input-glow:focus { box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); border-color: #D4AF37; }
+        .btn-premium { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); transition: all 0.3s ease; }
+        .font-sync { font-family: 'Syncopate', sans-serif; }
+        
+        /* Estilos da nova Grade de Horários */
+        .time-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;
+            max-height: 150px; overflow-y: auto; padding-right: 5px;
+        }
+        .time-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff; border-radius: 0.5rem; padding: 0.75rem 0.5rem; font-size: 0.75rem;
+            font-weight: bold; cursor: pointer; transition: all 0.3s ease; text-align: center;
+        }
+        .time-btn:hover { background: rgba(212, 175, 55, 0.1); border-color: #D4AF37; }
+        .time-btn.selected {
+            background: #D4AF37; color: #000; border-color: #D4AF37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+        }
+        
+        /* Tela de Sucesso */
+        #success-screen {
+            display: none; position: absolute; inset: 0; z-index: 100;
+            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px);
+            flex-direction: column; align-items: center; justify-content: center;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+
+    <div id="bg-parallax" class="parallax-bg"></div>
+
+    <div class="relative z-50 w-full max-w-lg">
+        <div class="text-center mb-10">
+            <h1 id="shop-name" class="font-sync text-3xl font-bold text-white tracking-tighter uppercase mb-2">BarberFlow</h1>
+            <p class="text-accent text-[10px] uppercase tracking-[0.5em] font-black italic">Mestre da Tesoura</p>
+        </div>
+
+        <div class="glass-ui p-10 rounded-[3rem] shadow-2xl min-h-[500px] flex flex-col justify-center">
+            
+            <form id="public-booking-form" class="space-y-5">
+                <input type="text" id="client-name" required placeholder="SEU NOME COMPLETO" 
+                    class="input-glow w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-white outline-none font-bold tracking-widest text-xs">
+                
+                <select id="barber-select" required 
+                    class="input-glow w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-white outline-none appearance-none cursor-pointer font-bold tracking-widest text-xs">
+                    <option value="" class="bg-black text-gray-500">SELECIONE O PROFISSIONAL</option>
+                </select>
+
+                <select id="booking-service" required 
+                    class="input-glow w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-white outline-none appearance-none cursor-pointer text-xs font-bold tracking-widest">
+                    <option value="" class="bg-black text-gray-500">QUAL O SERVIÇO?</option>
+                </select>
+
+                <div>
+                    <input type="date" id="booking-date" required class="input-glow w-full bg-white/5 border border-white/10 p-5 rounded-2xl text-white outline-none text-xs font-bold mb-3">
+                    
+                    <div id="time-grid-container" class="hidden">
+                        <p class="text-[10px] text-accent font-bold tracking-widest mb-2 uppercase">Horários Disponíveis</p>
+                        <div id="time-grid" class="time-grid">
+                            </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="btn-submit" class="btn-premium w-full py-5 rounded-2xl text-black font-black uppercase tracking-widest text-sm hover:scale-105 active:scale-95 mt-4">
+                    FINALIZAR RESERVA
+                </button>
+            </form>
+
+            <div id="success-screen">
+                <div class="mb-6 bg-accent/20 p-6 rounded-full border border-accent/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h2 class="font-sync text-2xl font-bold text-white text-center mb-2 tracking-tighter uppercase">ESTILO RESERVADO</h2>
+                <p class="text-gray-400 text-xs uppercase tracking-widest mb-8 text-center">Seu horário foi confirmado!</p>
+                
+                <a id="btn-whatsapp" href="#" target="_blank" class="bg-[#25D366] text-white px-8 py-4 rounded-full text-[10px] font-black uppercase hover:bg-[#1ebd5b] transition-all tracking-widest w-full text-center mb-4 flex items-center justify-center gap-2 shadow-lg shadow-green-900/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.347-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.876 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                    CONFIRMAR NO WHATSAPP
+                </a>
+
+                <button onclick="window.location.reload()" class="border border-accent/50 text-accent px-8 py-3 rounded-full text-[10px] font-black uppercase hover:bg-accent hover:text-black transition-all tracking-widest">
+                    NOVO AGENDAMENTO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="sound-scissors" src="https://assets.mixkit.co/active_storage/sfx/611/611-preview.mp3"></audio>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="public-booking.js"></script>
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            const bg = document.getElementById('bg-parallax');
+            const x = (window.innerWidth / 2 - e.pageX) / 50;
+            const y = (window.innerHeight / 2 - e.pageY) / 50;
+            bg.style.transform = `translate(${x}px, ${y}px) scale(1.1)`;
+        });
+    </script>
+</body>
+</html>

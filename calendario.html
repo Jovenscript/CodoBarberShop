@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>BarberFlow | Calendário & Folgas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { accent: '#D4AF37' } } } }
+    </script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex">
+
+    <aside class="w-64 bg-gray-800 p-6 flex flex-col justify-between border-r border-gray-700">
+        <div>
+            <h1 id="shop-name-sidebar" class="text-2xl font-bold text-accent mb-10 italic">Carregando...</h1>
+            <p class="text-xs text-gray-400 mb-6 uppercase tracking-widest font-bold">Área do Profissional</p>
+            <nav class="space-y-4">
+                <a href="painel-barbeiro.html" class="block hover:text-accent transition">Minha Agenda Hoje</a>
+                <a href="calendario.html" class="block text-accent font-semibold underline decoration-2 underline-offset-8">Calendário & Folgas</a>
+            </nav>
+        </div>
+        <button id="logout-btn" class="text-red-400 hover:text-red-600 transition text-left font-medium">Sair da Conta</button>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-[#0a0a0a]">
+        
+        <div class="p-8 pb-2">
+            <header class="mb-6">
+                <h2 class="text-3xl font-bold">Calendário</h2>
+                <p class="text-gray-400">Verifique seus próximos dias, atenda clientes ou solicite folgas.</p>
+            </header>
+
+            <div class="relative w-full mb-4">
+                <div id="date-carousel" class="flex overflow-x-auto hide-scrollbar gap-3 snap-x scroll-smooth pb-4">
+                    </div>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-8 pb-10">
+            <div class="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 min-h-full">
+                
+                <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
+                    <div>
+                        <h3 id="selected-date-title" class="text-xl font-semibold text-accent">Selecione um dia...</h3>
+                        <p id="folga-status" class="text-xs text-gray-400 mt-1 uppercase font-bold tracking-widest"></p>
+                    </div>
+                </div>
+
+                <div id="day-appointments-list" class="space-y-4">
+                    </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="calendario.js"></script>
+</body>
+</html>

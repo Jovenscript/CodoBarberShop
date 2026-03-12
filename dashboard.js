@@ -8,7 +8,7 @@ const totalBarbersEl = document.getElementById("total-barbers");
 const totalCompletedEl = document.getElementById("total-completed");
 
 let revenueChartInstance = null;
-let currentShopId = null; // Guardando o ID da loja para usar no sininho
+let currentShopId = null;
 
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
@@ -16,12 +16,10 @@ onAuthStateChanged(auth, async (user) => {
         return;
     }
     const userId = user.uid;
-    currentShopId = userId; // Salva o ID globalmente
+    currentShopId = userId;
 
     loadShopName(userId);
     loadDashboardData(userId);
-    
-    // Inicia o sistema de notificações após carregar os dados
     iniciarSistemaNotificacoes();
 });
 
@@ -68,40 +66,13 @@ async function loadDashboardData(uid) {
             if (data.status === "concluido" && data.date) {
                 completedCount++;
                 
-                // ANTI-BUG DO NaN: Tenta converter o preço. Se estiver vazio ou zoado, vira 0.
                 let precoValido = parseFloat(data.price);
-                if (isNaN(precoValido)) {
-                    precoValido = 0;
-                }
+                if (isNaN(precoValido)) precoValido = 0;
 
                 if (revenueByDay[data.date] !== undefined) {
                     revenueByDay[data.date] += precoValido;
                 }
                 totalRev += precoValido;
-            }
-        });
-
-        totalCompletedEl.innerText = completedCount;
-        totalRevenueEl.innerText = `R$ ${totalRev.toFixed(2)}`;
-
-        const labels = Object.keys(revenueByDay).map(d => d.split('-').reverse().slice(0, 2).join('/')); 
-        const values = Object.values(revenueByDay);
-
-        renderChart(labels, values);
-
-    } catch (error) {
-        console.error("Erro ao carregar dashboard:", error);
-    }
-}
-
-        appointmentsSnap.forEach((doc) => {
-            const data = doc.data();
-            if (data.status === "concluido" && data.date) {
-                completedCount++;
-                if (revenueByDay[data.date] !== undefined) {
-                    revenueByDay[data.date] += Number(data.price);
-                    totalRev += Number(data.price);
-                }
             }
         });
 
@@ -162,9 +133,7 @@ function renderChart(labels, data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
+            plugins: { legend: { display: false } },
             scales: {
                 y: {
                     beginAtZero: true,
@@ -194,12 +163,10 @@ function iniciarSistemaNotificacoes() {
     const notificationBadge = document.getElementById("notification-badge");
     const whatsappList = document.getElementById("whatsapp-list");
 
-    if(!notificationBtn) return; // Se não estiver na página certa, não faz nada
+    if(!notificationBtn) return;
 
-    // O Som de notificação
     const somNotificacao = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
 
-    // Mostra/Esconde o painel ao clicar no sino
     notificationBtn.addEventListener("click", () => {
         notificationPanel.classList.toggle("hidden");
         notificationBadge.classList.add("hidden"); 
@@ -267,10 +234,6 @@ function iniciarSistemaNotificacoes() {
         }
     }
 
-    // --- TESTE RÁPIDO: Tira as duas barras (//) do comando abaixo para testar AGORA:
-    setTimeout(gerarConfirmacoesWhatsApp, 2000);
-
-    // O Verificador do Relógio (Roda a cada 1 minuto)
     setInterval(() => {
         const agora = new Date();
         if (agora.getHours() === 12 && agora.getMinutes() === 0) {
@@ -284,5 +247,3 @@ function iniciarSistemaNotificacoes() {
         }
     }, 60000);
 }
-
-

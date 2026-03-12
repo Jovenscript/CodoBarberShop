@@ -33,16 +33,6 @@
         }
     </script>
 </head>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('PWA: Service Worker registrado!'))
-                    .catch(err => console.log('PWA: Erro no Service Worker', err));
-            });
-        }
-    </script>
-</head>
 
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
 
@@ -113,5 +103,6 @@
 </body>
 
 </html>
+
 
 

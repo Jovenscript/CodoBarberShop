@@ -67,6 +67,37 @@ async function loadDashboardData(uid) {
             const data = doc.data();
             if (data.status === "concluido" && data.date) {
                 completedCount++;
+                
+                // ANTI-BUG DO NaN: Tenta converter o preço. Se estiver vazio ou zoado, vira 0.
+                let precoValido = parseFloat(data.price);
+                if (isNaN(precoValido)) {
+                    precoValido = 0;
+                }
+
+                if (revenueByDay[data.date] !== undefined) {
+                    revenueByDay[data.date] += precoValido;
+                }
+                totalRev += precoValido;
+            }
+        });
+
+        totalCompletedEl.innerText = completedCount;
+        totalRevenueEl.innerText = `R$ ${totalRev.toFixed(2)}`;
+
+        const labels = Object.keys(revenueByDay).map(d => d.split('-').reverse().slice(0, 2).join('/')); 
+        const values = Object.values(revenueByDay);
+
+        renderChart(labels, values);
+
+    } catch (error) {
+        console.error("Erro ao carregar dashboard:", error);
+    }
+}
+
+        appointmentsSnap.forEach((doc) => {
+            const data = doc.data();
+            if (data.status === "concluido" && data.date) {
+                completedCount++;
                 if (revenueByDay[data.date] !== undefined) {
                     revenueByDay[data.date] += Number(data.price);
                     totalRev += Number(data.price);
@@ -253,4 +284,5 @@ function iniciarSistemaNotificacoes() {
         }
     }, 60000);
 }
+
 

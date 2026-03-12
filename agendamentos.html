@@ -3,156 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <title>BarberFlow | Agendamentos</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        accent: '#D4AF37'
-                    }
-                }
-            }
+            theme: { extend: { colors: { accent: '#D4AF37' } } }
         }
     </script>
     <link rel="stylesheet" href="mobile.css">
 </head>
 
-<body class="bg-gray-900 text-white min-h-screen flex">
+<body class="bg-gray-900 text-white min-h-screen flex relative">
 
-    <aside class="w-64 bg-gray-800 p-6 flex flex-col justify-between">
-
+    <aside class="w-64 bg-gray-800 p-6 hidden md:flex flex-col justify-between border-r border-gray-700 h-screen sticky top-0">
         <div>
             <h1 id="shop-name-sidebar" class="text-2xl font-bold text-accent mb-10 italic">
                 Carregando...
             </h1>
-
             <nav class="space-y-4">
-
-                <a href="dashboard.html" class="block hover:text-accent transition">
-                    Dashboard
-                </a>
-
-                <a href="clientes.html" class="block hover:text-accent transition">
-                    Clientes
-                </a>
-
-                <a href="agendamentos.html" class="block text-accent font-semibold">
-                    Agendamentos
-                </a>
-
-                <a href="barbeiros.html" class="block hover:text-accent transition">
-                    Barbeiros
-                </a>
-
-                <a href="perfil.html" class="block hover:text-accent transition">
-                    Perfil
-                </a>
-
+                <a href="dashboard.html" class="block hover:text-accent transition">Dashboard</a>
+                <a href="clientes.html" class="block hover:text-accent transition">Clientes</a>
+                <a href="agendamentos.html" class="block text-accent font-semibold underline decoration-2 underline-offset-8">Agendamentos</a>
+                <a href="barbeiros.html" class="block hover:text-accent transition">Barbeiros</a>
+                <a href="perfil.html" class="block hover:text-accent transition">Perfil</a>
             </nav>
         </div>
-
-        <button 
-            id="logout-btn"
-            class="text-red-400 hover:text-red-600 transition text-left"
-        >
-            Sair
-        </button>
-
+        <button id="logout-btn" class="text-red-400 hover:text-red-600 transition text-left font-medium">Sair da Conta</button>
     </aside>
 
-    <main class="flex-1 p-10">
-
-        <h2 class="text-3xl font-bold mb-8">
-            Agendamentos
-        </h2>
+    <main class="flex-1 p-10 overflow-y-auto">
+        
+        <header class="mb-10 flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-bold">Agendamentos</h2>
+                <p class="text-gray-400 text-sm md:text-base">Gerencie a agenda da barbearia.</p>
+            </div>
+            <button id="logout-btn-mobile" class="md:hidden bg-gray-800 p-3 rounded-full border border-gray-700 text-red-400">
+                <i data-lucide="log-out" class="w-5 h-5"></i>
+            </button>
+        </header>
 
         <div class="bg-gray-800 p-6 rounded-xl shadow-lg mb-10">
-
-            <h3 class="text-xl font-semibold mb-6">
-                Novo Agendamento
-            </h3>
-
+            <h3 class="text-xl font-semibold mb-6">Novo Agendamento</h3>
             <form id="appointment-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-                <select 
-                    id="appointment-client"
-                    required
-                    class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent focus:outline-none"
-                >
+                <select id="appointment-client" required class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent focus:outline-none">
                     <option value="">Selecione o Cliente</option>
                 </select>
 
-                <select 
-                    id="appointment-barber"
-                    required
-                    class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent focus:outline-none"
-                >
+                <select id="appointment-barber" required class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent focus:outline-none">
                     <option value="">Selecione o Barbeiro</option>
                 </select>
 
-                <input 
-                    type="date"
-                    id="appointment-date"
-                    required
-                    class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent focus:outline-none text-white color-scheme-dark" style="color-scheme: dark;"
-                >
+                <input type="date" id="appointment-date" required class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent focus:outline-none text-white color-scheme-dark" style="color-scheme: dark;">
 
-                <select 
-                    id="appointment-time"
-                    required
-                    class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent focus:outline-none"
-                >
+                <select id="appointment-time" required class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent focus:outline-none">
                     <option value="">Selecione o Horário</option>
                 </select>
 
-                <select 
-                    id="appointment-service"
-                    required
-                    class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent focus:outline-none"
-                >
+                <select id="appointment-service" required class="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent focus:outline-none">
                     <option value="">Selecione o Serviço</option>
                 </select>
 
-                <input 
-                    type="number" step="0.01"
-                    id="appointment-price"
-                    placeholder="Valor (R$)"
-                    required readonly
-                    class="px-4 py-2 rounded-lg bg-gray-600 border border-gray-500 text-gray-300 cursor-not-allowed focus:outline-none"
-                >
+                <input type="number" step="0.01" id="appointment-price" placeholder="Valor (R$)" required readonly class="px-4 py-2 rounded-lg bg-gray-600 border border-gray-500 text-gray-300 cursor-not-allowed focus:outline-none">
 
-                <button 
-                    type="submit"
-                    class="md:col-span-3 bg-accent text-black font-semibold py-2 rounded-lg hover:opacity-90 transition"
-                >
+                <button type="submit" class="md:col-span-3 bg-accent text-black font-semibold py-2 rounded-lg hover:opacity-90 transition">
                     Salvar Agendamento
                 </button>
-
             </form>
-
         </div>
 
         <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
-
-            <h3 class="text-xl font-semibold mb-6">
-                Lista de Agendamentos
-            </h3>
-
-            <div id="appointments-list" class="space-y-4">
-
-                </div>
-
+            <h3 class="text-xl font-semibold mb-6">Lista de Agendamentos</h3>
+            <div id="appointments-list" class="space-y-4"></div>
         </div>
 
     </main>
 
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-[#111827] border-t border-gray-800 z-50 px-6 py-2 flex justify-between items-end shadow-[0_-10px_30px_rgba(0,0,0,0.8)] pb-safe">
+        
+        <a href="dashboard.html" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 pb-2">
+            <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+            <span class="text-[9px] font-bold uppercase tracking-widest">Painel</span>
+        </a>
+
+        <a href="agendamentos.html" class="flex flex-col items-center gap-1 text-accent transform -translate-y-4">
+            <div class="bg-gray-800 p-3 rounded-full border-2 border-accent shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                <i data-lucide="calendar" class="w-6 h-6"></i>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-widest mt-1">Agenda</span>
+        </a>
+
+        <a href="clientes.html" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 pb-2">
+            <i data-lucide="users" class="w-6 h-6"></i>
+            <span class="text-[9px] font-bold uppercase tracking-widest">Clientes</span>
+        </a>
+
+        <a href="barbeiros.html" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 pb-2">
+            <i data-lucide="scissors" class="w-6 h-6"></i>
+            <span class="text-[9px] font-bold uppercase tracking-widest">Equipe</span>
+        </a>
+    </nav>
+
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="appointments.js"></script>
-
+    <script>lucide.createIcons();</script>
+    <script>
+        setTimeout(() => {
+            const btnMobile = document.getElementById('logout-btn-mobile');
+            const btnPc = document.getElementById('logout-btn');
+            if(btnMobile && btnPc) btnMobile.addEventListener('click', () => btnPc.click());
+        }, 1000);
+    </script>
 </body>
-
 </html>

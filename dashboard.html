@@ -14,7 +14,7 @@
     </script>
     <link rel="stylesheet" href="mobile.css">
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex">
+<body class="bg-gray-900 text-white min-h-screen flex relative">
 
     <aside class="w-64 bg-gray-800 p-6 hidden md:flex flex-col justify-between border-r border-gray-700 h-screen sticky top-0">
         <div>
@@ -30,8 +30,7 @@
         <button id="logout-btn" class="text-red-400 hover:text-red-600 transition text-left font-medium">Sair da Conta</button>
     </aside>
 
-    <main class="flex-1 p-10 overflow-y-auto">
-        
+    <main class="flex-1 p-10">
         <header class="mb-10 flex justify-between items-center">
             <div>
                 <h2 class="text-2xl md:text-3xl font-bold">Painel de Controle</h2>
@@ -90,18 +89,39 @@
         </div>
     </main>
 
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-[#111827] border-t border-gray-800 z-50 px-6 py-2 flex justify-between items-end shadow-[0_-10px_30px_rgba(0,0,0,0.8)] pb-safe">
+        
+        <a href="dashboard.html" class="flex flex-col items-center gap-1 text-accent transform -translate-y-4">
+            <div class="bg-gray-800 p-3 rounded-full border-2 border-accent shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-widest mt-1">Painel</span>
+        </a>
+
+        <a href="agendamentos.html" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 pb-2">
+            <i data-lucide="calendar" class="w-6 h-6"></i>
+            <span class="text-[9px] font-bold uppercase tracking-widest">Agenda</span>
+        </a>
+
+        <a href="clientes.html" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 pb-2">
+            <i data-lucide="users" class="w-6 h-6"></i>
+            <span class="text-[9px] font-bold uppercase tracking-widest">Clientes</span>
+        </a>
+
+        <a href="barbeiros.html" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 pb-2">
+            <i data-lucide="scissors" class="w-6 h-6"></i>
+            <span class="text-[9px] font-bold uppercase tracking-widest">Equipe</span>
+        </a>
+    </nav>
+
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="dashboard.js"></script>
-    
     <script>lucide.createIcons();</script>
     <script>
-        // Faz o botão de sair mobile funcionar
         setTimeout(() => {
             const btnMobile = document.getElementById('logout-btn-mobile');
             const btnPc = document.getElementById('logout-btn');
-            if(btnMobile && btnPc) {
-                btnMobile.addEventListener('click', () => btnPc.click());
-            }
+            if(btnMobile && btnPc) btnMobile.addEventListener('click', () => btnPc.click());
         }, 1000);
     </script>
 </body>

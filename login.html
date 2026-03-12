@@ -2,33 +2,33 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>BarberFlow | Login</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BarberFlow</title> <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        accent: '#D4AF37'
-                    }
-                }
-            }
+            theme: { extend: { colors: { accent: '#D4AF37' } } }
         }
     </script>
+    <link rel="stylesheet" href="mobile.css">
+
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#111827">
-    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Codo">
     
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('PWA: Service Worker registrado!'))
-                    .catch(err => console.log('PWA: Erro no Service Worker', err));
+                    .then(reg => console.log('PWA: OK!'))
+                    .catch(err => console.log('PWA: Erro', err));
             });
         }
     </script>
@@ -92,3 +92,4 @@
 </body>
 
 </html>
+

@@ -1,68 +1,98 @@
 /* mobile.css - Ajustes Finos para Celular */
 
+/* Esconde os ícones no PC (aparecem apenas no celular) */
+.nav-icon {
+    display: none;
+}
+
 @media (max-width: 768px) {
-    /* Ajusta o corpo para não sobrar espaço nas laterais */
     body {
         overflow-x: hidden;
         width: 100vw;
     }
 
-    /* Transforma a Sidebar (lateral) em uma barra fixa embaixo ou no topo */
+    /* Esconde o menu lateral do PC */
     aside {
-        width: 100% !important;
-        height: auto !important;
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        z-index: 999;
-        flex-direction: row !important;
-        padding: 10px !important;
-        border-top: 1px solid #374151;
-        border-right: none !important;
-        background: rgba(31, 41, 55, 0.95) !important;
-        backdrop-filter: blur(10px);
+        display: none !important;
     }
 
-    aside h1, aside p, #logout-btn {
-        display: none !important; /* Esconde o logo e o sair no mobile para dar espaço */
-    }
-
-    aside nav {
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: space-around !important;
-        width: 100% !important;
-        margin-top: 0 !important;
-    }
-
-    aside nav a {
-        font-size: 10px !important;
-        text-align: center;
-        text-transform: uppercase;
-    }
-
-    /* Ajusta o conteúdo principal para não ficar escondido atrás da barra */
+    /* Reconfigura a área principal para usar a tela toda */
     main {
-        padding-bottom: 80px !important;
-        padding-left: 10px !important;
-        padding-right: 10px !important;
-    }
-
-    /* Faz os cartões de data do carrossel ficarem maiores e mais fáceis de clicar */
-    .date-card {
-        width: 70px !important;
-        padding: 10px 5px !important;
-    }
-
-    /* Ajusta os cards de agendamento para virarem coluna */
-    #day-appointments-list div {
-        flex-direction: column !important;
-        text-align: center;
-        gap: 15px;
-    }
-
-    /* Botão de finalizar agendamento em largura total */
-    .done-btn {
+        padding: 20px !important;
         width: 100% !important;
+    }
+
+    /* O SEGREDO DA GRADE: Transforma o header da página num App */
+    main > header {
+        background-color: #111827; /* bg-gray-900 */
+        padding: 20px;
+        border-radius: 0 0 20px 20px;
+        margin: -20px -20px 20px -20px; /* Estica até as bordas */
+        border-bottom: 1px solid #374151;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* A GRADE DE BOTÕES (Injetamos isso no HTML logo abaixo do Header) */
+    .mobile-app-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .mobile-app-btn {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #1f2937; /* bg-gray-800 */
+        border: 1px solid #374151; /* border-gray-700 */
+        border-radius: 16px;
+        aspect-ratio: 1 / 1; /* Força ser um quadrado perfeito */
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s;
+    }
+
+    .mobile-app-btn:active {
+        border-color: #D4AF37;
+        background-color: rgba(212, 175, 55, 0.1);
+    }
+
+    .mobile-app-btn span {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        margin-top: 10px;
+    }
+
+    /* Exibe os ícones apenas na grade do mobile */
+    .mobile-app-btn .nav-icon {
+        display: block;
+        width: 35px;
+        height: 35px;
+        color: #D4AF37; /* Dourado */
+    }
+
+    /* Ajustes para os quadros de faturamento */
+    .grid-cols-1.md\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+    
+    .grid-cols-1.md\:grid-cols-4 > div {
+        padding: 15px !important;
+        text-align: center;
+    }
+    
+    .grid-cols-1.md\:grid-cols-4 > div p {
+        font-size: 9px !important;
+    }
+    
+    .grid-cols-1.md\:grid-cols-4 > div h3 {
+        font-size: 18px !important;
     }
 }

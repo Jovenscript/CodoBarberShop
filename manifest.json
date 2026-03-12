@@ -1,8 +1,8 @@
 {
-  "name": "BarberFlow Gestão",
-  "short_name": "BarberFlow",
-  "description": "Sistema de Gestão para Barbearias",
-  "start_url": "./index.html",
+  "name": "Codo Barbershop",
+  "short_name": "Codo",
+  "description": "Sistema de Gestão Exclusivo",
+  "start_url": "./login.html",
   "display": "standalone",
   "background_color": "#111827",
   "theme_color": "#D4AF37",

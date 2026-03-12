@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>BarberFlow | Portfólio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = { theme: { extend: { colors: { accent: '#D4AF37' } } } }
+    </script>
+    <link rel="stylesheet" href="mobile.css">
+    <style>
+        /* Força as imagens da galeria a serem quadrados perfeitos */
+        .aspect-square { aspect-ratio: 1 / 1; }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-white min-h-screen font-sans pb-safe">
+
+    <header class="sticky top-0 bg-[#0a0a0a]/95 backdrop-blur-md z-50 p-4 border-b border-gray-800 flex items-center justify-between">
+        <button onclick="history.back()" class="text-accent p-2 hover:bg-gray-800 rounded-full transition">
+            <i data-lucide="arrow-left" class="w-6 h-6"></i>
+        </button>
+        <h1 class="text-lg font-bold uppercase tracking-widest" id="header-name">Perfil</h1>
+        <div class="w-10"></div> </header>
+
+    <main class="w-full max-w-2xl mx-auto pb-10">
+        
+        <div class="p-6 flex flex-col items-center border-b border-gray-800">
+            <div class="relative mb-4">
+                <img id="barber-avatar" src="https://via.placeholder.com/150/1f2937/D4AF37?text=Foto" alt="Foto do Barbeiro" class="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-4 border-accent shadow-[0_0_20px_rgba(212,175,55,0.3)]">
+                <div class="absolute bottom-0 right-0 bg-accent text-black p-1.5 rounded-full border-2 border-[#0a0a0a]">
+                    <i data-lucide="scissors" class="w-4 h-4"></i>
+                </div>
+            </div>
+            
+            <h2 id="barber-name" class="text-2xl font-black mb-1">Carregando...</h2>
+            <p class="text-[10px] text-accent uppercase tracking-widest font-bold mb-4">Barbeiro Especialista</p>
+            
+            <p id="barber-bio" class="text-sm text-gray-400 text-center leading-relaxed italic px-2">
+                Buscando a história do profissional...
+            </p>
+            
+            <button id="btn-agendar" class="mt-6 w-full bg-accent text-black font-bold py-4 rounded-xl hover:opacity-90 transition transform active:scale-95 shadow-lg shadow-accent/20">
+                AGENDAR COM ESTE PROFISSIONAL
+            </button>
+        </div>
+
+        <div class="p-1">
+            <div class="flex items-center justify-center gap-2 mb-4 mt-4 text-gray-400">
+                <i data-lucide="grid" class="w-5 h-5"></i>
+                <span class="text-sm font-bold uppercase tracking-widest">Portfólio de Cortes</span>
+            </div>
+            
+            <div id="gallery-grid" class="grid grid-cols-3 gap-1">
+                </div>
+        </div>
+
+    </main>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="sobre.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

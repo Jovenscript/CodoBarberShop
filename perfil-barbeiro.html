@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>CodoBarberShop | Meu Portfólio</title> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = { theme: { extend: { colors: { accent: '#D4AF37' } } } }
+    </script>
+    <link rel="stylesheet" href="mobile.css">
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex relative">
+
+    <aside class="w-64 bg-gray-800 p-6 hidden md:flex flex-col justify-between border-r border-gray-700 h-screen sticky top-0">
+        <div>
+            <h1 class="text-2xl font-bold text-accent mb-10 italic">CodoBarberShop</h1>
+            <p class="text-xs text-gray-400 mb-6 uppercase tracking-widest font-bold">Área do Profissional</p>
+            <nav class="space-y-4">
+                <a href="painel-barbeiro.html" class="block hover:text-accent transition">Minha Agenda Hoje</a>
+                <a href="calendario.html" class="block hover:text-accent transition">Calendário & Folgas</a>
+                <a href="perfil-barbeiro.html" class="block text-accent font-semibold underline decoration-2 underline-offset-8">Meu Portfólio</a>
+            </nav>
+        </div>
+        <button id="logout-btn" class="text-red-400 hover:text-red-600 transition text-left font-medium">Sair da Conta</button>
+    </aside>
+
+    <main class="flex-1 p-10 overflow-y-auto">
+        <header class="mb-10 flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-bold">Montar Portfólio</h2>
+                <p class="text-gray-400 text-sm md:text-base italic">Conte sua história e mostre seus melhores cortes.</p>
+            </div>
+            <a href="painel-barbeiro.html" class="md:hidden bg-gray-800 p-3 rounded-full border border-gray-700 text-gray-400 hover:text-accent">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+        </header>
+
+        <div class="max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 mb-20 md:mb-0">
+            
+            <div class="bg-gray-800 p-8 rounded-xl border border-gray-700 shadow-lg">
+                <h3 class="text-accent font-bold mb-4 uppercase tracking-widest text-sm">Sua Biografia</h3>
+                <form id="bio-form" class="space-y-4">
+                    
+                    <div>
+                        <label class="block text-gray-400 mb-1 text-[10px] uppercase font-bold">Foto do Perfil (URL)</label>
+                        <input type="url" id="barber-avatar-input" placeholder="https://link-da-sua-foto.jpg" class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent outline-none text-sm transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-gray-400 mb-1 text-[10px] uppercase font-bold">Sua História / Apresentação</label>
+                        <textarea id="barber-bio-input" rows="5" placeholder="Ex: Olá, eu sou o João. Trabalho como barbeiro há 12 anos..." class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent outline-none text-sm transition resize-none"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-accent text-black font-bold py-3 rounded-lg hover:opacity-90 transition shadow-lg shadow-accent/20">
+                        SALVAR PERFIL
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-gray-800 p-8 rounded-xl border border-gray-700 shadow-lg flex flex-col">
+                <h3 class="text-accent font-bold mb-4 uppercase tracking-widest text-sm flex items-center gap-2">
+                    <i data-lucide="image-plus" class="w-5 h-5"></i> Postar Novo Corte
+                </h3>
+                
+                <form id="post-form" class="space-y-4 mb-6 border-b border-gray-700 pb-6">
+                    <div>
+                        <label class="block text-gray-400 mb-1 text-[10px] uppercase font-bold">Link da Foto (URL)</label>
+                        <input type="url" id="post-img-url" required placeholder="https://link-da-foto-do-corte.jpg" class="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1 text-[10px] uppercase font-bold">Descrição do Estilo</label>
+                        <input type="text" id="post-desc" required placeholder="Ex: Corte Degradê com Barba Lenhador" class="w-full px-3 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-accent outline-none text-sm">
+                    </div>
+                    <button type="submit" class="w-full bg-gray-700 border border-gray-600 hover:bg-gray-600 text-white font-bold py-2 rounded-lg transition text-sm">
+                        Adicionar ao Portfólio
+                    </button>
+                </form>
+
+                <h4 class="text-xs text-gray-400 uppercase font-bold tracking-widest mb-3">Fotos Publicadas</h4>
+                <div class="flex-1 overflow-y-auto pr-2">
+                    <div id="posts-list" class="grid grid-cols-2 gap-3">
+                        <p class="text-xs text-gray-500 italic col-span-2">Buscando portfólio...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="perfil-barbeiro.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
